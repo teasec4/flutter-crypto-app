@@ -1,7 +1,5 @@
-
-
+import 'dart:async';
 import 'dart:convert';
-
 import 'package:routepractice/features/coin/domain/coin.dart';
 import 'package:http/http.dart' as http;
 import 'package:routepractice/features/coin/domain/coin_repository.dart';
@@ -15,9 +13,12 @@ class CoinService implements CoinRepository{
       '&per_page=$perPage&page=$page&sparkline=false',
     );
 
-    final response = await http.get(url);
+    try{
+      final response = await http
+      .get(url)
+      .timeout(const Duration(seconds: 10));
 
-    if (response.statusCode != 200){
+      if (response.statusCode != 200){
       throw Exception('Failed to fetch data');
     }
 
@@ -36,6 +37,11 @@ class CoinService implements CoinRepository{
             (json['price_change_percentage_24h'] ?? 0).toDouble(),
       );
     }).toList();
+    } on TimeoutException{
+      throw Exception('⏰ Request timed out. Check your internet connection.');
+    } catch (e){
+       throw Exception('❌ Unexpected error: $e');
+    }
   }
 
 }

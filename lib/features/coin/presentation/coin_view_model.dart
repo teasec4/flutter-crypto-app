@@ -21,6 +21,8 @@ class CoinNotifier extends StateNotifier<AsyncValue<List<Coin>>> {
   final CoinRepository _repo;
   int _page = 1;
   bool _isLoadingMore = false;
+  
+  bool get isLoadingMore => _isLoadingMore;
 
   CoinNotifier(this._repo) : super(const AsyncLoading());
 

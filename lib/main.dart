@@ -10,6 +10,9 @@ void main() async{
   await Supabase.initialize(
     url: AppSecrets.suppaBaseUrl,
     anonKey: AppSecrets.anonKey,
+    authOptions: const FlutterAuthClientOptions(
+      autoRefreshToken: true,
+    ),
   );
 
   runApp(const ProviderScope(child: MyApp()));

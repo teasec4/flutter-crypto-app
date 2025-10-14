@@ -27,8 +27,6 @@ class CustomNavBar extends StatelessWidget{
             height: 70,
             decoration: BoxDecoration(
               color: AppPalette.accent..withOpacity(0.15),
-
-              borderRadius: BorderRadius.circular(28),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -57,12 +55,12 @@ class CustomNavBar extends StatelessWidget{
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: isActive ? Colors.white : Colors.grey, size: 26,),
-            const SizedBox(height: 4,),
+            Icon(icon, color: isActive ? Colors.white : Colors.white, size: 26,),
+            const SizedBox(height: 2,),
             Text(
               label,
               style: TextStyle(
-                color: isActive ? Colors.white : Colors.grey,
+                color: isActive ? Colors.white : Colors.white,
                 fontSize: 12,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),

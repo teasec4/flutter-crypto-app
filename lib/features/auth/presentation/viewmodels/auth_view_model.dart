@@ -20,9 +20,23 @@ final authViewModelProvider =
 class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
   final AuthService _service;
 
-  AuthViewModel(this._service) : super(const AsyncData(null));
+  AuthViewModel(this._service) : super(const AsyncData(null)){
+    _listenToAuthChanges();
+  }
+  /// listen to auth changes from supabsae
+  void _listenToAuthChanges() {
+    _service.supabase.auth.onAuthStateChange.listen((event) {
+      final session = event.session;
+      if (session == null) {
+        state = const AsyncData(null);
+      } else {
+        final user = _service.getCurrentUser();
+        state = AsyncData(user);
+      }
+    });
+  }
 
-  /// Регистрация
+  /// r]sign up
   Future<void> signUp(String name, String email, String password) async {
     state = const AsyncLoading();
     final result = await _service.signUp(name: name, email: email, password: password);

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routepractice/core/theme/app_palete.dart';
 import 'package:routepractice/features/coin/presentation/coin_view_model.dart';
 import 'package:routepractice/features/coin/presentation/widgets/coin_tile.dart';
+import 'package:routepractice/features/globalmarket/presentation/global_market_header.dart';
 
 class CoinPage extends ConsumerStatefulWidget {
   const CoinPage({super.key});
@@ -36,6 +38,7 @@ class _CoinPageState extends ConsumerState<CoinPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('🔥 build() called');
     final coinsAsync = ref.watch(coinNotifierProvider);
     final notifier = ref.read(coinNotifierProvider.notifier);
 
@@ -45,16 +48,14 @@ class _CoinPageState extends ConsumerState<CoinPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('⚠️ $err'),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppPalette.accent,
             ),
           );
         },
       );
     });
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: coinsAsync.when(
+    return  coinsAsync.when(
         data: (coins) {
           // Пустой список
           if (coins.isEmpty) {
@@ -66,54 +67,77 @@ class _CoinPageState extends ConsumerState<CoinPage> {
             );
           }
 
-          return RefreshIndicator(
-            color: Colors.yellowAccent,
-            backgroundColor: Colors.black,
-            onRefresh: () => notifier.refresh(),
-            child: ListView.builder(
-              controller: scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: coins.length + 1,
-              itemBuilder: (context, i) {
-                // Индикатор загрузки внизу
-                if (i == coins.length) {
-                  return notifier.isLoadingMore
-                      ? const Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.yellow,
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink();
-                }
+          return SafeArea(
+            top: true,
+            bottom: false,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                GlobalMarketHeader(),
+                const Divider(color: Colors.white24, height: 1, indent: 10, endIndent: 10,),
+                Expanded(
+                  child: RefreshIndicator(
+                    color: AppPalette.accent,
+                    backgroundColor: AppPalette.background,
+                    onRefresh: () => notifier.refresh(),
+                    child: ListView.builder(
+                      controller: scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: coins.length + 1,
+                      itemBuilder: (context, i) {
 
-                // Анимация появления монет
-                return AnimatedOpacity(
-                  duration: Duration(milliseconds: 250 + (i % 10) * 20),
-                  opacity: 1,
-                  child: AnimatedSlide(
-                    offset: const Offset(0, 0.1),
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOut,
-                    child: CoinTile(coin: coins[i]),
+                        if (i == coins.length) {
+                          return notifier.isLoadingMore
+                              ? const Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppPalette.accent,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink();
+                        }
+
+
+                        return AnimatedOpacity(
+                          duration: Duration(milliseconds: 250 + (i % 10) * 20),
+                          opacity: 1,
+                          child: AnimatedSlide(
+                            offset: const Offset(0, 0.1),
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.easeOut,
+                            child: CoinTile(coin: coins[i]),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
           );
         },
         error: (err, _) => Center(
-          child: Text(
-            'Error: $err',
-            style: const TextStyle(color: Colors.redAccent),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Error: $err', style: const TextStyle(color: Colors.redAccent)),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  await notifier.refresh(); // запускает повторную загрузку
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Try Again'),
+              ),
+            ],
           ),
         ),
         loading: () => const Center(
-          child: CircularProgressIndicator(color: Colors.yellow),
+          child: CircularProgressIndicator(color: AppPalette.accent),
         ),
-      ),
-    );
+      );
+
   }
 }

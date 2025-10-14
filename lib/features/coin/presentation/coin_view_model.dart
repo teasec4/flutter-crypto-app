@@ -34,7 +34,7 @@ class CoinNotifier extends StateNotifier<AsyncValue<List<Coin>>> {
     } catch (e, st) {
       state = AsyncError(e, st);
       Future.delayed(const Duration(seconds: 5), () {
-        if (coins.isEmpty) loadInitial();
+        loadInitial();
       });
     }
   }

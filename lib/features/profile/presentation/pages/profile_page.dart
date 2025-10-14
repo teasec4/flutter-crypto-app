@@ -14,29 +14,33 @@ class ProfilePage extends ConsumerWidget {
 
     final user = authState.value;
 
-    return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              user != null ? "Welcome, ${user.name ?? user.email}" : "No user",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return SafeArea(
+      child: Center(
+        child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user != null ? "Welcome, ${user.name ?? user.email}" : "No user",
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+        
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.logout),
+                  label: const Text("Log out"),
+                  onPressed: () async {
+                    profileVM.logout();
+                    if (context.mounted) {
+                      context.go('/login');
+                    }
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-
-            ElevatedButton.icon(
-              icon: const Icon(Icons.logout),
-              label: const Text("Log out"),
-              onPressed: () async {
-                profileVM.logout();
-                if (context.mounted) {
-                  context.go('/login');
-                }
-              },
-            ),
-          ],
-        ),
-      );
+          ),
+      ),
+    );
   }
 }

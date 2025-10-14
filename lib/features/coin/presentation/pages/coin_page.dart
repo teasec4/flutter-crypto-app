@@ -119,19 +119,23 @@ class _CoinPageState extends ConsumerState<CoinPage> {
           );
         },
         error: (err, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Error: $err', style: const TextStyle(color: Colors.redAccent)),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  await notifier.refresh(); // запускает повторную загрузку
-                },
-                icon: const Icon(Icons.refresh),
-                label: const Text('Try Again'),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Error: $err', style: const TextStyle(color: Colors.redAccent)),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await notifier.refresh(); // запускает повторную загрузку
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Try Again'),
+                ),
+              ],
+            ),
           ),
         ),
         loading: () => const Center(

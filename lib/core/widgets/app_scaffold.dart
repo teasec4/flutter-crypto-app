@@ -8,21 +8,31 @@ class AppScaffold extends StatelessWidget {
   const AppScaffold({super.key, required this.navShell});
 
   static const titles = ['Coins', 'Profile'];
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppPalette.background,
       extendBodyBehindAppBar: true,
-      appBar:  AppBar(title: Text(titles[navShell.currentIndex]),
+      extendBody: true, //
+      appBar: AppBar(
+        title: Text(titles[navShell.currentIndex]),
         backgroundColor: Colors.transparent,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
-      body: navShell,
-      extendBody: true,
-      bottomNavigationBar: CustomNavBar(navShell: navShell),
+      body: Stack(
+        children: [
+          navShell, // main content
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: CustomNavBar(navShell: navShell),
+            ),
+          ),
+        ],
+      ),
     );
   }
-
 }

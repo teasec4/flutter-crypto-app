@@ -24,7 +24,7 @@ class CustomNavBar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: AppPalette.accent.withOpacity(0.18),
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.25),
@@ -53,12 +53,13 @@ class CustomNavBar extends StatelessWidget {
       onTap: () => _onTap(index, context),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isActive
               ? Colors.white.withOpacity(0.25)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

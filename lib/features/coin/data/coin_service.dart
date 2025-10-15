@@ -31,7 +31,7 @@ class CoinService implements CoinRepository{
         symbol: json['symbol'],
         price: (json['current_price'] ?? 0).toDouble(),
         imageUrl: json['image'],
-        marketCap: json['market_cap'].toString(),
+        marketCap: json['market_cap_rank'].toString(),
         priceChange24H: (json['price_change_24h'] ?? 0).toDouble(),
         priceChangePercentage24H:
             (json['price_change_percentage_24h'] ?? 0).toDouble(),

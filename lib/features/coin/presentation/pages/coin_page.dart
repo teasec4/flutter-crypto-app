@@ -74,7 +74,7 @@ class _CoinPageState extends ConsumerState<CoinPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 GlobalMarketHeader(),
-                const Divider(color: Colors.white24, height: 1, indent: 10, endIndent: 10,),
+                const Divider(color: AppPalette.accent, height: 1, indent: 15, endIndent: 15,),
                 Expanded(
                   child: RefreshIndicator(
                     color: AppPalette.accent,

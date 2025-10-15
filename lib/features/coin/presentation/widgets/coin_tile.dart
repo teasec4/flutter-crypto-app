@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/coin.dart';
 
 class CoinTile extends StatelessWidget {
@@ -9,7 +10,15 @@ class CoinTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Image.network(coin.imageUrl, width: 36),
+      onTap: () => context.push('/coins/${coin.id}', extra: coin),
+      leading: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(coin.marketCap),
+          const SizedBox(width: 8,),
+          Image.network(coin.imageUrl, width: 36),
+        ],
+      ),
       title: Text(
         coin.name,
         style: const TextStyle(fontWeight: FontWeight.bold),

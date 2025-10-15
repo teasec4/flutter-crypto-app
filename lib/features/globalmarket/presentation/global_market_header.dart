@@ -29,21 +29,42 @@ class GlobalMarketHeader extends ConsumerWidget{
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('Global Market Cap:' , style: TextStyle(color: Colors.white70, fontSize: 12),),
-                    Text('\$${_formatNumber(data.totalMarketCap['usd'] ?? 0)}')
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('\$${_formatNumber(data.totalMarketCap['usd'] ?? 0)}', style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        SizedBox(width: 8,),
+                        Text('${data.marketCapChangePercentage24hUsd.toStringAsFixed(2)}%',
+                          style: TextStyle(
+                            color: data.marketCapChangePercentage24hUsd >= 0
+                                ? Colors.green
+                                : Colors.red,
+                            fontSize: 16,
+                          ),
+                        )
+                      ],
+                    )
                   ],
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('24h Change:', style: TextStyle(color: Colors.white70, fontSize: 12),),
-                    Text('${data.marketCapChangePercentage24hUsd.toStringAsFixed(2)}%',
-                      style: TextStyle(
-                        color: data.marketCapChangePercentage24hUsd >= 0
-                            ? Colors.green
-                            : Colors.red,
+                    const Text(
+                      '24h Volume:',
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                    Text(
+                      '\$${_formatNumber(data.totalVolume['usd'] ?? 0)}',
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],

@@ -9,6 +9,7 @@ import 'package:routepractice/features/auth/presentation/viewmodels/auth_view_mo
 import 'package:routepractice/features/coin/domain/coin.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_detail_page.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_page.dart';
+import 'package:routepractice/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:routepractice/features/nft/presentation/pages/nft_detail_page.dart';
 import 'package:routepractice/features/nft/presentation/pages/nft_page.dart';
 import 'package:routepractice/features/profile/presentation/pages/profile_page.dart';
@@ -100,6 +101,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                 ],
+              ),
+            ],
+          ),
+
+          // === FAVORITES BRANCH ===
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/favorites',
+                builder: (context, state) => const FavoritesPage(),
               ),
             ],
           ),

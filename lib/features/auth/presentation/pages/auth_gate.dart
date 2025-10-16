@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:routepractice/features/auth/presentation/viewmodels/auth_view_model.dart';
 
+/// Simple auth gate that shows loading while checking auth state
+/// Navigation is handled by GoRouter redirect in app_router.dart
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
 
@@ -11,32 +12,36 @@ class AuthGate extends ConsumerWidget {
     final authState = ref.watch(authViewModelProvider);
 
     return authState.when(
-      data: (user) {
-        // not auth-ed
-        if (user == null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (context.mounted) context.go('/login');
-          });
-        } else {
-          // auth-ed
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (context.mounted) context.go('/coins');
-          });
-        }
-
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(color: Colors.pinkAccent),
-          ),
-        );
-      },
-      loading: () => const Scaffold(
+      data: (user) => const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(color: Colors.pinkAccent),
+          child: CircularProgressIndicator(),
         ),
       ),
-      error: (e, _) => Scaffold(
-        body: Center(child: Text('Auth error: $e')),
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, stack) => Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Authentication Error'),
+              const SizedBox(height: 16),
+              Text(
+                error.toString(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.read(authViewModelProvider.notifier).checkAuthState(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -24,10 +24,10 @@ class AuthService {
       if (user == null) throw Exception('Register failed');
 
       return right(UserModel(
-        id: user.id, 
-        email: user.email ?? '', 
+        id: user.id,
+        email: user.email ?? '',
         name: user.userMetadata?['name'] ?? name,
-        ));
+      ));
     } catch (e) {
       return left(Failure(e.toString()));
     }
@@ -37,19 +37,19 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    try{
+    try {
       final response = await supabase.auth.signInWithPassword(
-        email:email,
-        password:password,
+        email: email,
+        password: password,
       );
       final user = response.user;
-      if(user == null) throw Exception('Invalid credentials');
+      if (user == null) throw Exception('Invalid credentials');
 
       return right(UserModel(
-        id: user.id, 
-        email: user.email ?? '', 
-        name: user.userMetadata?['name']),
-        );
+        id: user.id,
+        email: user.email ?? '',
+        name: user.userMetadata?['name'],
+      ));
     } catch (e) {
       return left(Failure(e.toString()));
     }
@@ -59,13 +59,25 @@ class AuthService {
     final user = supabase.auth.currentUser;
     if (user == null) return null;
     return UserModel(
-      id: user.id, 
-        email: user.email ?? '', 
-        name: user.userMetadata?['name'],
+      id: user.id,
+      email: user.email ?? '',
+      name: user.userMetadata?['name'],
     );
   }
 
   Future<void> signOut() async {
     await supabase.auth.signOut();
+  }
+
+  Stream<UserModel?> get authStateChanges {
+    return supabase.auth.onAuthStateChange.map((event) {
+      final user = event.session?.user;
+      if (user == null) return null;
+      return UserModel(
+        id: user.id,
+        email: user.email ?? '',
+        name: user.userMetadata?['name'],
+      );
+    });
   }
 }

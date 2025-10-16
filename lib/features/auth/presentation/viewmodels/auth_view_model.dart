@@ -7,7 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabaseProvider = Provider((ref) => Supabase.instance.client);
 
-final authServiceProvider = Provider<AuthService>((ref){
+final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(ref.watch(supabaseProvider));
 });
 
@@ -20,26 +20,44 @@ final authViewModelProvider =
 class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
   final AuthService _service;
 
-  AuthViewModel(this._service) : super(const AsyncData(null)){
+  AuthViewModel(this._service) : super(const AsyncData(null)) {
     _listenToAuthChanges();
   }
-  /// listen to auth changes from supabsae
+
+  /// Listen to auth changes from Supabase
   void _listenToAuthChanges() {
-    _service.supabase.auth.onAuthStateChange.listen((event) {
-      final session = event.session;
-      if (session == null) {
-        state = const AsyncData(null);
-      } else {
-        final user = _service.getCurrentUser();
-        state = AsyncData(user);
-      }
+    _service.authStateChanges.listen((user) {
+      state = AsyncData(user);
     });
   }
 
-  /// r]sign up
-  Future<void> signUp(String name, String email, String password) async {
+  /// Sign up with validation
+  Future<void> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    // Basic form validation
+    if (name.trim().isEmpty) {
+      state = AsyncError('Name is required', StackTrace.current);
+      return;
+    }
+    if (email.trim().isEmpty) {
+      state = AsyncError('Email is required', StackTrace.current);
+      return;
+    }
+    if (password.trim().isEmpty) {
+      state = AsyncError('Password is required', StackTrace.current);
+      return;
+    }
+
     state = const AsyncLoading();
-    final result = await _service.signUp(name: name, email: email, password: password);
+
+    final result = await _service.signUp(
+      name: name.trim(),
+      email: email.trim(),
+      password: password.trim(),
+    );
 
     result.match(
       (failure) => state = AsyncError(failure.message, StackTrace.current),
@@ -47,10 +65,27 @@ class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
     );
   }
 
-  /// sign in
-  Future<void> signIn(String email, String password) async {
+  /// Sign in with validation
+  Future<void> signIn({
+    required String email,
+    required String password,
+  }) async {
+    // Basic form validation
+    if (email.trim().isEmpty) {
+      state = AsyncError('Email is required', StackTrace.current);
+      return;
+    }
+    if (password.trim().isEmpty) {
+      state = AsyncError('Password is required', StackTrace.current);
+      return;
+    }
+
     state = const AsyncLoading();
-    final result = await _service.signIn(email: email, password: password);
+
+    final result = await _service.signIn(
+      email: email.trim(),
+      password: password.trim(),
+    );
 
     result.match(
       (failure) => state = AsyncError(failure.message, StackTrace.current),
@@ -58,15 +93,21 @@ class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
     );
   }
 
-  /// checking auth
-  void loadCurrentUser() {
+  /// Check current authentication state
+  void checkAuthState() {
     final user = _service.getCurrentUser();
     state = AsyncData(user);
   }
 
-  /// log out
+  /// Sign out
   Future<void> signOut() async {
     await _service.signOut();
     state = const AsyncData(null);
   }
+
+  /// Get current user without changing state
+  UserModel? get currentUser => _service.getCurrentUser();
+
+  /// Check if user is authenticated
+  bool get isAuthenticated => currentUser != null;
 }

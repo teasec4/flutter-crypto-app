@@ -23,11 +23,11 @@ class CustomNavBar extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: AppPalette.accent.withOpacity(0.18),
+            color: AppPalette.accent.withValues(alpha: 0.18),
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.25),
+                color: Colors.black.withValues(alpha: 0.25),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -37,9 +37,13 @@ class CustomNavBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildNavItem(Icons.currency_bitcoin, "Coins", 0, context),
-              const SizedBox(width: 16),
-              _buildNavItem(Icons.person, "Profile", 1, context),
+            _buildNavItem(Icons.currency_bitcoin, "Coins", 0, context),
+            const SizedBox(width: 12),
+            _buildNavItem(Icons.collections, "NFT", 1, context),
+            const SizedBox(width: 12),
+            _buildNavItem(Icons.favorite, "Favorites", 2, context),
+            const SizedBox(width: 12),
+            _buildNavItem(Icons.person, "Profile", 3, context),
             ],
           ),
         ),
@@ -57,7 +61,7 @@ class CustomNavBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.white.withOpacity(0.25)
+              ? Colors.white.withValues(alpha: 0.25)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(18),
         ),

@@ -6,13 +6,13 @@ class AppTheme{
     scaffoldBackgroundColor: AppPalette.background,
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppPalette.surface.withOpacity(0.6),
+      fillColor: AppPalette.surface.withValues(alpha: 0.6),
       hintStyle: const TextStyle(color: AppPalette.textSecondary, fontSize: 14),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
-          color: Colors.white.withOpacity(0.08),
+          color: Colors.white.withValues(alpha: 0.08),
           width: 1.2,
         ),
       ),

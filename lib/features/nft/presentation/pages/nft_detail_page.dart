@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routepractice/core/theme/app_palete.dart';
+import 'package:routepractice/features/nft/domain/nft.dart';
 import 'package:routepractice/features/nft/presentation/nft_detail_view_model.dart';
 
 class NFTDetailPage extends ConsumerWidget {
   final String nftId;
+  final NFT? nft;
 
-  const NFTDetailPage({super.key, required this.nftId});
+  const NFTDetailPage({super.key, required this.nftId, this.nft});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

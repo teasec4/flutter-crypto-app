@@ -10,39 +10,38 @@ import 'package:routepractice/features/coin/domain/coin.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_detail_page.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_page.dart';
 import 'package:routepractice/features/favorites/presentation/pages/favorites_page.dart';
+import 'package:routepractice/features/nft/domain/nft.dart';
 import 'package:routepractice/features/nft/presentation/pages/nft_detail_page.dart';
 import 'package:routepractice/features/nft/presentation/pages/nft_page.dart';
 import 'package:routepractice/features/profile/presentation/pages/profile_page.dart';
+import 'package:routepractice/go_router_notifier.dart';
 
 /// Root navigator key for the app
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Main app router provider with authentication redirects
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authViewModel = ref.watch(authViewModelProvider.notifier);
+  final notifier = ref.watch(goRouterNotifierProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
+    refreshListenable: notifier,
 
     // Authentication redirect logic
     redirect: (context, state) {
-      final isAuthenticated = authViewModel.isAuthenticated;
-      final isGoingToAuth = state.matchedLocation == '/' ||
-                           state.matchedLocation == '/login' ||
-                           state.matchedLocation == '/signup';
+      final isAuth = notifier.isAuthenticated;
+      final goingToAuth =
+          state.matchedLocation == '/' ||
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/signup';
 
-      // If not authenticated and not on auth route, redirect to login
-      if (!isAuthenticated && !isGoingToAuth) {
+      if (!isAuth && !goingToAuth) {
         return '/login';
       }
-
-      // If authenticated and on auth route, redirect to main app
-      if (isAuthenticated && isGoingToAuth) {
+      if (isAuth && goingToAuth) {
         return '/coins';
       }
-
-      // No redirect needed
       return null;
     },
 
@@ -97,10 +96,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     path: 'details/:id',
                     builder: (context, state) {
                       final nftId = state.pathParameters['id']!;
-                      return NFTDetailPage(nftId: nftId);
+                      final nft = state.extra as NFT?;
+                      return NFTDetailPage(nftId: nftId, nft: nft);
                     },
                   ),
-                ],
+                                  ],
               ),
             ],
           ),

@@ -18,6 +18,7 @@ class CoinTile extends ConsumerWidget {
       key: ValueKey(coin.id),
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
+        extentRatio: 0.25,
         children: [
           SlidableAction(
             onPressed: (_) async {
@@ -40,7 +41,7 @@ class CoinTile extends ConsumerWidget {
                     SnackBar(
                       content: Text('❤️ ${coin.name} added to favorites'),
                       behavior: SnackBarBehavior.floating,
-                      duration: const Duration(seconds: 2),
+                      duration: const Duration(seconds: 1),
                     ),
                   );
                 }

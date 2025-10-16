@@ -7,6 +7,8 @@ import 'app_router.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrint('✅ Step 1: Widgets ready');
+
   await Supabase.initialize(
     url: AppSecrets.suppaBaseUrl,
     anonKey: AppSecrets.anonKey,
@@ -14,8 +16,18 @@ void main() async{
       autoRefreshToken: true,
     ),
   );
+  debugPrint('✅ Step 2: Supabase initialized');
+
+  // final client = Supabase.instance.client;
+  // try {
+  //   await client.auth.signOut();
+  //   debugPrint('✅ Supabase session cleared');
+  // } catch (e) {
+  //   debugPrint('⚠️ Failed to clear session: $e');
+  // }
 
   runApp(const ProviderScope(child: MyApp()));
+   debugPrint('✅ Step 3: runApp done');
 }
 
 class MyApp extends ConsumerWidget {

@@ -44,7 +44,11 @@ class _NFTPageState extends ConsumerState<NFTPage> {
       favoritesNotifier.removeFavorite(favoriteId, FavoriteType.nft);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${nft.name} removed from favorites')),
+          SnackBar(
+            content: Text('${nft.name} removed from favorites'),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 1),
+          ),
         );
       }
     } else {
@@ -52,7 +56,11 @@ class _NFTPageState extends ConsumerState<NFTPage> {
       favoritesNotifier.addFavorite(favoriteItem);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('❤️ Added to favorites')),
+         SnackBar(
+            content: Text('❤️ ${nft.name} Added to favorites'),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 1),
+            ),
         );
       }
     }

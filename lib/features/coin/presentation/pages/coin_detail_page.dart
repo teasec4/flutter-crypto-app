@@ -8,14 +8,10 @@ class CoinDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.white,
-        elevation: 0,
-        title: Text(coin.name),
-      ),
-      body: Container(
-          child:CoinTile(coin: coin),
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: CoinTile(coin: coin),
       ),
     );
   }

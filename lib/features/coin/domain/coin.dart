@@ -18,6 +18,32 @@ class Coin{
     required this.priceChange24H,
     required this.priceChangePercentage24H,
   });
+
+  factory Coin.fromJson(Map<String, dynamic> json) {
+    return Coin(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      symbol: json['symbol'] as String,
+      price: (json['price'] as num).toDouble(),
+      imageUrl: json['imageUrl'] as String,
+      marketCap: json['marketCap'] as String,
+      priceChange24H: (json['priceChange24H'] as num).toDouble(),
+      priceChangePercentage24H: (json['priceChangePercentage24H'] as num).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'symbol': symbol,
+      'price': price,
+      'imageUrl': imageUrl,
+      'marketCap': marketCap,
+      'priceChange24H': priceChange24H,
+      'priceChangePercentage24H': priceChangePercentage24H,
+    };
+  }
 }
 
 

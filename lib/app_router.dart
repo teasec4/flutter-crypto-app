@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:routepractice/core/widgets/app_scaffold.dart';
-import 'package:routepractice/features/auth/presentation/pages/auth_gate.dart';
 import 'package:routepractice/features/auth/presentation/pages/login_page.dart';
 import 'package:routepractice/features/auth/presentation/pages/signup_page.dart';
-import 'package:routepractice/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:routepractice/features/auth/presentation/pages/splash_page.dart';
 import 'package:routepractice/features/coin/domain/coin.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_detail_page.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_page.dart';
@@ -25,32 +24,48 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/',
+    initialLocation: '/splash',
     refreshListenable: notifier,
 
     // Authentication redirect logic
     redirect: (context, state) {
-      final isAuth = notifier.isAuthenticated;
-      final goingToAuth =
-          state.matchedLocation == '/' ||
-          state.matchedLocation == '/login' ||
-          state.matchedLocation == '/signup';
+      final isLoading = notifier.isLoading;
+      final isAuthenticated = notifier.isAuthenticated;
+      final isSplash = state.matchedLocation == '/splash';
+      final isAuthRoute = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
 
-      if (!isAuth && !goingToAuth) {
+      // Show splash while loading auth state
+      if (isLoading && !isSplash) {
+        return '/splash';
+      }
+
+      // If loading and on splash, stay on splash
+      if (isLoading && isSplash) {
+        return null;
+      }
+
+      // If not authenticated and not on auth routes, redirect to login
+      if (!isAuthenticated && !isAuthRoute) {
         return '/login';
       }
-      if (isAuth && goingToAuth) {
+
+      // If authenticated and on auth routes or splash, redirect to coins
+      if (isAuthenticated && (isAuthRoute || isSplash)) {
         return '/coins';
       }
+
+      // No redirect needed
       return null;
     },
 
     routes: [
-      // === AUTH ROUTES (Outside Shell) ===
+      // === SPLASH ROUTE ===
       GoRoute(
-        path: '/',
-        builder: (context, state) => const AuthGate(),
+        path: '/splash',
+        builder: (context, state) => const SplashPage(),
       ),
+
+      // === AUTH ROUTES ===
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginPage(),

@@ -15,8 +15,11 @@ class GoRouterNotifier extends ChangeNotifier {
     );
   }
 
-  bool get isAuthenticated =>
-      ref.read(authViewModelProvider).asData?.value != null;
+  AsyncValue<UserModel?> get authState => ref.read(authViewModelProvider);
+
+  bool get isLoading => authState.isLoading;
+
+  bool get isAuthenticated => authState.asData?.value != null;
 }
 
 final goRouterNotifierProvider = Provider((ref) => GoRouterNotifier(ref));

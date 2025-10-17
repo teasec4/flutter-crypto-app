@@ -60,13 +60,14 @@ class AppScaffold extends StatelessWidget {
       body: Stack(
         children: [
           navShell, // main content
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: CustomNavBar(navShell: navShell),
+          if (!isDetailPage) // Only show bottom nav on main pages
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: CustomNavBar(navShell: navShell),
+              ),
             ),
-          ),
         ],
       ),
     );

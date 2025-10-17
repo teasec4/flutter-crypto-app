@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:routepractice/core/theme/app_palete.dart';
@@ -16,37 +15,25 @@ class CustomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: AppPalette.accent.withValues(alpha: 0.18),
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-            _buildNavItem(Icons.currency_bitcoin, "Coins", 0, context),
-            const SizedBox(width: 12),
-            _buildNavItem(Icons.collections, "NFT", 1, context),
-            const SizedBox(width: 12),
-            _buildNavItem(Icons.favorite, "Favorites", 2, context),
-            const SizedBox(width: 12),
-            _buildNavItem(Icons.person, "Profile", 3, context),
-            ],
-          ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppPalette.surface.withValues(alpha: 0.95),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 0.5,
         ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(Icons.currency_bitcoin, "Coins", 0, context),
+          _buildNavItem(Icons.collections, "NFT", 1, context),
+          _buildNavItem(Icons.favorite_border, "Favorites", 2, context),
+          _buildNavItem(Icons.person_outline, "Profile", 3, context),
+        ],
       ),
     );
   }
@@ -55,27 +42,29 @@ class CustomNavBar extends StatelessWidget {
     final isActive = navShell.currentIndex == index;
     return GestureDetector(
       onTap: () => _onTap(index, context),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.white.withValues(alpha: 0.25)
+              ? AppPalette.accent.withValues(alpha: 0.2)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white, size: 26),
+            Icon(
+              icon,
+              color: isActive ? AppPalette.accent : Colors.white.withValues(alpha: 0.7),
+              size: 20,
+            ),
             const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                color: isActive ? AppPalette.accent : Colors.white.withValues(alpha: 0.7),
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],

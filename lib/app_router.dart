@@ -90,9 +90,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'details/:id',
-                    builder: (context, state) {
+                    pageBuilder: (context, state) {
                       final coin = state.extra as Coin;
-                      return CoinDetailPage(coin: coin);
+                      return CustomTransitionPage(
+                        key: state.pageKey,
+                        child: CoinDetailPage(coin: coin),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 300),
+                      );
                     },
                   ),
                 ],
@@ -109,13 +119,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'details/:id',
-                    builder: (context, state) {
+                    pageBuilder: (context, state) {
                       final nftId = state.pathParameters['id']!;
                       final nft = state.extra as NFT?;
-                      return NFTDetailPage(nftId: nftId, nft: nft);
+                      return CustomTransitionPage(
+                        key: state.pageKey,
+                        child: NFTDetailPage(nftId: nftId, nft: nft),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 300),
+                      );
                     },
                   ),
-                                  ],
+                ],
               ),
             ],
           ),

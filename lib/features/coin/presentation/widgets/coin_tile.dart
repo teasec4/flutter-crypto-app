@@ -57,7 +57,7 @@ class CoinTile extends ConsumerWidget {
 
       // 👇 твой оригинальный стиль ниже сохранён полностью
       child: ListTile(
-        onTap: () => context.push('/coins/:id', extra: coin),
+        onTap: () => context.push('/coins/details/${coin.id}', extra: coin),
 
         leading: Row(
           mainAxisSize: MainAxisSize.min,

@@ -16,49 +16,6 @@ class CoinDetailPage extends ConsumerWidget {
     return SafeArea(
       child: Column(
         children: [
-          // Favorite button in the top area (since AppScaffold handles the app bar)
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () async {
-                    final notifier = ref.read(favoritesNotifierProvider.notifier);
-                    if (isFavorite) {
-                      await notifier.removeFavorite(coin.id, FavoriteType.coin);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('❌ ${coin.name} removed from favorites'),
-                            behavior: SnackBarBehavior.floating,
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    } else {
-                      await notifier.addFavorite(FavoriteItem.fromCoin(coin));
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('❤️ ${coin.name} added to favorites'),
-                            behavior: SnackBarBehavior.floating,
-                            duration: const Duration(seconds: 1),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : Colors.white,
-                    size: 28,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
           // Main content
           Expanded(
             child: SingleChildScrollView(

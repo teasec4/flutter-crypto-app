@@ -6,6 +6,60 @@ import 'package:routepractice/features/auth/presentation/viewmodels/auth_view_mo
 import 'package:routepractice/features/auth/presentation/widgets/auth_field.dart';
 import 'package:routepractice/features/auth/presentation/widgets/auth_gradient_btn.dart';
 
+/// Converts technical auth errors to user-friendly messages
+String _getUserFriendlyErrorMessage(String error) {
+  final lowerError = error.toLowerCase();
+
+  if (lowerError.contains('user already registered') ||
+      lowerError.contains('user_already_exists') ||
+      lowerError.contains('email already exists')) {
+    return 'An account with this email already exists. Try signing in instead.';
+  }
+
+  if (lowerError.contains('password should be at least')) {
+    return 'Password must be at least 6 characters long.';
+  }
+
+  if (lowerError.contains('invalid email') ||
+      lowerError.contains('email_invalid')) {
+    return 'Please enter a valid email address.';
+  }
+
+  if (lowerError.contains('weak password') ||
+      lowerError.contains('password_weak')) {
+    return 'Password is too weak. Please choose a stronger password.';
+  }
+
+  if (lowerError.contains('signup is disabled') ||
+      lowerError.contains('signup_disabled')) {
+    return 'New account registration is currently disabled.';
+  }
+
+  if (lowerError.contains('name') && lowerError.contains('required')) {
+    return 'Please enter your name.';
+  }
+
+  if (lowerError.contains('all fields are required')) {
+    return 'Please fill in all required fields.';
+  }
+
+  if (lowerError.contains('network') ||
+      lowerError.contains('connection') ||
+      lowerError.contains('timeout')) {
+    return 'Network error. Please check your internet connection and try again.';
+  }
+
+  // Fallback to login error handler for common errors
+  if (lowerError.contains('invalid login credentials') ||
+      lowerError.contains('invalid_credentials') ||
+      lowerError.contains('too many requests')) {
+    return 'Unable to create account. Please try again later.';
+  }
+
+  // For any other error, provide a generic but helpful message
+  return 'Unable to create account. Please try again or contact support if the problem persists.';
+}
+
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
 
@@ -45,16 +99,35 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             // Show error message if any
             if (authState.hasError)
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade100,
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppPalette.error.withValues(alpha: 0.1),
+                  border: Border.all(
+                    color: AppPalette.error.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  authState.error.toString(),
-                  style: const TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: AppPalette.error,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _getUserFriendlyErrorMessage(authState.error.toString()),
+                        style: TextStyle(
+                          color: AppPalette.error,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routepractice/features/coin/presentation/widgets/empty_view.dart';
 import 'package:routepractice/features/favorites/domain/favorite_item.dart';
 import 'package:routepractice/features/favorites/presentation/favorites_view_model.dart';
 import 'package:routepractice/features/nft/presentation/nft_view_model.dart';
+import 'package:routepractice/features/nft/presentation/widgets/nft_empty_view.dart';
+import 'package:routepractice/features/nft/presentation/widgets/nft_error_view.dart';
 import 'package:routepractice/features/nft/presentation/widgets/nft_item.dart';
 
 class NFTPage extends ConsumerStatefulWidget {
@@ -74,42 +77,43 @@ class _NFTPageState extends ConsumerState<NFTPage> {
     return SafeArea(
       child: nftState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Error: $error'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.read(nftNotifierProvider.notifier).refresh(),
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
-        data: (nfts) => RefreshIndicator(
-          onRefresh: () => ref.read(nftNotifierProvider.notifier).refresh(),
-          child: ListView.builder(
-            controller: _scrollController,
-            padding: const EdgeInsets.all(16),
-            itemCount: nfts.length + (isLoadingMore ? 1 : 0), // Add loading indicator
-            itemBuilder: (context, index) {
-              if (index == nfts.length) {
-                // Show loading indicator at the bottom
-                return const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
 
-              final nft = nfts[index];
-              return NFTItem(
-                nft: nft,
-                onToggleFavorite: () => _toggleFavorite(nft),
-              );
-            },
-          ),
+        error: (error, _) => NftErrorView(
+            error: error.toString(),
+            onRetry: () async => await ref.read(nftNotifierProvider.notifier).refresh()
         ),
+
+        data: (nfts) {
+          // empty list
+          if(nfts.isEmpty){
+            return NftEmptyView(onRetry: () async => await ref.read(nftNotifierProvider.notifier).refresh());
+          }
+
+          // data
+          return RefreshIndicator(
+            onRefresh: () => ref.read(nftNotifierProvider.notifier).refresh(),
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: nfts.length + (isLoadingMore ? 1 : 0), // Add loading indicator
+              itemBuilder: (context, index) {
+                if (index == nfts.length) {
+                  // Show loading indicator at the bottom
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                final nft = nfts[index];
+                return NFTItem(
+                  nft: nft,
+                  onToggleFavorite: () => _toggleFavorite(nft),
+                );
+              },
+            ),
+          );
+        }
       ),
     );
   }

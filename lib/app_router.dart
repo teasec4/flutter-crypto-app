@@ -32,7 +32,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isLoading = notifier.isLoading;
       final isAuthenticated = notifier.isAuthenticated;
       final isSplash = state.matchedLocation == '/splash';
-      final isAuthRoute = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
+      final isAuthRoute =
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/signup';
 
       // Show splash while loading auth state
       if (isLoading && !isSplash) {
@@ -60,20 +62,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
     routes: [
       // === SPLASH ROUTE ===
-      GoRoute(
-        path: '/splash',
-        builder: (context, state) => const SplashPage(),
-      ),
+      GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
 
       // === AUTH ROUTES ===
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginPage(),
-      ),
-      GoRoute(
-        path: '/signup',
-        builder: (context, state) => const SignUpPage(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
+      GoRoute(path: '/signup', builder: (context, state) => const SignUpPage()),
 
       // === MAIN SHELL WITH BOTTOM NAVIGATION ===
       StatefulShellRoute.indexedStack(
@@ -92,17 +85,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     path: 'details/:id',
                     pageBuilder: (context, state) {
                       final coin = state.extra as Coin;
-                      return CustomTransitionPage(
-                        key: state.pageKey,
-                        child: CoinDetailPage(coin: coin),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        },
-                        transitionDuration: const Duration(milliseconds: 300),
-                      );
+                      return NoTransitionPage(
+                    key: state.pageKey,
+                     child: CoinDetailPage(coin: coin),
+                    );
                     },
                   ),
                 ],
@@ -120,19 +106,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'details/:id',
                     pageBuilder: (context, state) {
-                      final nftId = state.pathParameters['id']!;
-                      final nft = state.extra as NFT?;
-                      return CustomTransitionPage(
-                        key: state.pageKey,
-                        child: NFTDetailPage(nftId: nftId, nft: nft),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        },
-                        transitionDuration: const Duration(milliseconds: 300),
-                      );
+                    final nftId = state.pathParameters['id']!;
+                    final nft = state.extra as NFT?;
+                    return NoTransitionPage(
+                    key: state.pageKey,
+                    child: NFTDetailPage(nftId: nftId, nft: nft),
+                    );
                     },
                   ),
                 ],

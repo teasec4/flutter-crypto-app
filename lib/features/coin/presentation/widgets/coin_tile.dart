@@ -55,10 +55,12 @@ class CoinTile extends ConsumerWidget {
         ],
       ),
 
-      // 👇 твой оригинальный стиль ниже сохранён полностью
       child: ListTile(
         onTap: () => context.push('/coins/details/${coin.id}', extra: coin),
-
+        dense: true, // <-- делает элемент компактнее
+        visualDensity: VisualDensity.compact, // <-- уменьшает отступы ещё сильнее
+        splashColor: Colors.transparent,   // убирает “всплеск” (волну)
+        hoverColor: Colors.transparent,     // убирает подсветку при наведении (для Web)
         leading: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -72,9 +74,9 @@ class CoinTile extends ConsumerWidget {
             const SizedBox(width: 8),
             Image.network(
               coin.imageUrl,
-              width: 36,
-              height: 36,
-              errorBuilder: (_, __, ___) => const Icon(Icons.error, size: 36),
+              width: 20,
+              height: 20,
+              errorBuilder: (_, __, ___) => const Icon(Icons.error, size: 20),
             ),
           ],
         ),

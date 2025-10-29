@@ -11,9 +11,9 @@ A modern **cryptocurrency** and **NFT tracking** application built with Flutter,
 
 ## 📸 Screenshots
 
-| Market | Favorite                                     | NFT                                   |
-|--------------|----------------------------------------------|---------------------------------------|
-| ![Market](./Screenshots/CoinsMarket.png) | ![Favorite](./Screenshots/ProfileAssets.png) | ![NFT](./Screenshots/AddingAsset.png) |
+| Market                                    | NFT                                   |
+|--------------|---------------------------------------|
+| ![Market](./Screenshots/CoinsMarket.png) | ![NFT](./Screenshots/AddingAsset.png) |
 
 ---
 

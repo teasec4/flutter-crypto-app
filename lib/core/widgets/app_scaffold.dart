@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:routepractice/core/interfaces/detail_pageable.dart';
 import 'package:routepractice/core/theme/app_palete.dart';
 import 'package:routepractice/core/widgets/custom_nav_bar.dart';
-import 'package:routepractice/features/coin/domain/coin.dart';
 
-class AppScaffold extends ConsumerWidget {
+class AppScaffold extends StatelessWidget {
   final StatefulNavigationShell navShell;
   const AppScaffold({super.key, required this.navShell});
 
@@ -15,20 +14,19 @@ class AppScaffold extends ConsumerWidget {
     return location.contains('/coins/');
   }
 
-
   String _getDetailTitle(BuildContext context, String location) {
     final state = GoRouterState.of(context);
     final extra = state.extra;
 
-    if (extra is Coin) {
-      return extra.name;
+    if (extra is DetailPageable) {
+      return extra.detailTitle;
     }
 
     return 'Details';
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
     final isDetailPage = _isDetailRoute(location);
     final detailTitle = isDetailPage ? _getDetailTitle(context, location) : null;

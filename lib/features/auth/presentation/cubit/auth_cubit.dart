@@ -1,38 +1,25 @@
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:routepractice/features/auth/data/auth_service.dart';
 import 'package:routepractice/features/auth/domain/user_model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// --- Providers --- ///
+part 'auth_state.dart';
 
-final supabaseProvider = Provider((ref) => Supabase.instance.client);
-
-final authServiceProvider = Provider<AuthService>((ref) {
-  return AuthService(ref.watch(supabaseProvider));
-});
-
-final authViewModelProvider =
-    StateNotifierProvider<AuthViewModel, AsyncValue<UserModel?>>((ref) {
-  final service = ref.watch(authServiceProvider);
-  return AuthViewModel(service);
-});
-
-/// --- ViewModel --- ///
-
-class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
+class AuthCubit extends Cubit<AuthState> {
   final AuthService _service;
 
-  AuthViewModel(this._service) : super(const AsyncLoading()) {
+  AuthCubit(this._service) : super(const AuthInitial()) {
     _initAuthListener();
   }
 
   /// 🧩 Подписка на изменения состояния авторизации
   void _initAuthListener() {
     _service.authStateChanges.listen((user) {
-      
-      state = AsyncData(user);
+      if (user != null) {
+        emit(AuthAuthenticated(user));
+      } else {
+        emit(const AuthUnauthenticated());
+      }
     });
     checkAuthState();
   }
@@ -44,11 +31,11 @@ class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
     required String password,
   }) async {
     if (name.trim().isEmpty || email.trim().isEmpty || password.trim().isEmpty) {
-      state = AsyncError('All fields are required', StackTrace.current);
+      emit(const AuthError('All fields are required'));
       return;
     }
 
-    state = const AsyncLoading();
+    emit(const AuthLoading());
 
     final result = await _service.signUp(
       name: name,
@@ -57,8 +44,8 @@ class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
     );
 
     result.match(
-      (failure) => state = AsyncError(failure.message, StackTrace.current),
-      (user) => state = AsyncData(user),
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(AuthAuthenticated(user)),
     );
   }
 
@@ -68,11 +55,11 @@ class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
     required String password,
   }) async {
     if (email.trim().isEmpty || password.trim().isEmpty) {
-      state = AsyncError('Email and password are required', StackTrace.current);
+      emit(const AuthError('Email and password are required'));
       return;
     }
 
-    state = const AsyncLoading();
+    emit(const AuthLoading());
 
     final result = await _service.signIn(
       email: email,
@@ -80,21 +67,25 @@ class AuthViewModel extends StateNotifier<AsyncValue<UserModel?>> {
     );
 
     result.match(
-      (failure) => state = AsyncError(failure.message, StackTrace.current),
-      (user) => state = AsyncData(user),
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(AuthAuthenticated(user)),
     );
   }
 
   /// 🔄 Проверить текущего пользователя
   void checkAuthState() {
     final user = _service.getCurrentUser();
-    state = AsyncData(user);
+    if (user != null) {
+      emit(AuthAuthenticated(user));
+    } else {
+      emit(const AuthUnauthenticated());
+    }
   }
 
   /// 🔴 Выйти из аккаунта
   Future<void> signOut() async {
     await _service.signOut();
-    state = const AsyncData(null);
+    emit(const AuthUnauthenticated());
   }
 
   /// ⚙️ Текущий пользователь (getter)

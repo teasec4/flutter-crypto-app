@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:routepractice/core/theme/app_palete.dart';
-import 'package:routepractice/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:routepractice/features/auth/presentation/widgets/auth_field.dart';
 import 'package:routepractice/features/auth/presentation/widgets/auth_gradient_btn.dart';
 
@@ -60,14 +60,14 @@ String _getUserFriendlyErrorMessage(String error) {
   return 'Unable to create account. Please try again or contact support if the problem persists.';
 }
 
-class SignUpPage extends ConsumerStatefulWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
   @override
-  ConsumerState<SignUpPage> createState() => _SignUpPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends ConsumerState<SignUpPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -82,7 +82,14 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authViewModelProvider);
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        return _buildSignUpUI(context, authState);
+      },
+    );
+  }
+
+  Widget _buildSignUpUI(BuildContext context, AuthState authState) {
 
     return Scaffold(
       body: Padding(
@@ -97,7 +104,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             const SizedBox(height: 30),
 
             // Show error message if any
-            if (authState.hasError)
+            if (authState is AuthError)
               Container(
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 16),
@@ -119,7 +126,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        _getUserFriendlyErrorMessage(authState.error.toString()),
+                        _getUserFriendlyErrorMessage(authState.message),
                         style: TextStyle(
                           color: AppPalette.error,
                           fontSize: 14,
@@ -165,5 +172,5 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         ),
       ),
     );
-  }
+      }
 }

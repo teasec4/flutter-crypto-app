@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:routepractice/features/globalmarket/domain/coin_market.dart';
 import 'package:routepractice/features/globalmarket/domain/global_market_repository.dart';
 import 'package:http/http.dart' as http;
+import 'package:routepractice/core/exceptions/app_exception.dart';
 
 class GlobalMarketService implements GlobalMarketRepository {
   @override
@@ -15,7 +16,10 @@ class GlobalMarketService implements GlobalMarketRepository {
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
-        throw Exception('❌ Failed to fetch global data');
+        throw ApiException(
+          'Failed to fetch global data',
+          statusCode: response.statusCode,
+        );
       }
 
       final Map<String, dynamic> json = jsonDecode(response.body);
@@ -36,9 +40,11 @@ class GlobalMarketService implements GlobalMarketRepository {
         (data['market_cap_change_percentage_24h_usd'] as num).toDouble(),
       );
     } on TimeoutException {
-      throw Exception('⏰ Request timed out. Check your internet connection.');
-    } catch (e) {
-      throw Exception('❌ Unexpected error: $e');
+      throw TimeoutException('Request timed out. Check your internet connection.');
+    } on AppException {
+      rethrow;
+    } catch (e, st) {
+      throw UnknownException('Unexpected error: $e', st);
     }
   }
 }

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routepractice/core/theme/app_palete.dart';
 import '../../domain/coin.dart';
 
-class CoinDetailPage extends ConsumerWidget {
+class CoinDetailPage extends StatelessWidget {
   final Coin coin;
   const CoinDetailPage({super.key, required this.coin});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         children: [

@@ -1,4 +1,6 @@
-class Coin{
+import 'package:routepractice/core/interfaces/detail_pageable.dart';
+
+class Coin implements DetailPageable {
   final String id;
   final String name;
   final String symbol;
@@ -18,6 +20,9 @@ class Coin{
     required this.priceChange24H,
     required this.priceChangePercentage24H,
   });
+
+  @override
+  String get detailTitle => name;
 
   factory Coin.fromJson(Map<String, dynamic> json) {
     return Coin(

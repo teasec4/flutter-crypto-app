@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:routepractice/core/di/service_locator.dart';
 import 'package:routepractice/core/widgets/app_scaffold.dart';
+import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:routepractice/features/auth/presentation/pages/login_page.dart';
 import 'package:routepractice/features/auth/presentation/pages/signup_page.dart';
 import 'package:routepractice/features/auth/presentation/pages/splash_page.dart';
 import 'package:routepractice/features/coin/domain/coin.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_detail_page.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_page.dart';
-
 import 'package:routepractice/features/profile/presentation/pages/profile_page.dart';
-import 'package:routepractice/go_router_notifier.dart';
 
 /// Root navigator key for the app
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 
-/// Main app router provider with authentication redirects
-final appRouterProvider = Provider<GoRouter>((ref) {
-  final notifier = ref.watch(goRouterNotifierProvider);
+/// Main app router with authentication redirects
+late final GoRouter appRouter;
 
-  return GoRouter(
-    navigatorKey: _rootNavigatorKey,
+/// Initialize app router
+/// Must be called after AuthCubit is created and during app initialization
+void initializeRouter() {
+  appRouter = GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/splash',
-    refreshListenable: notifier,
-
-    // Authentication redirect logic
     redirect: (context, state) {
-      final isLoading = notifier.isLoading;
-      final isAuthenticated = notifier.isAuthenticated;
+      final authCubit = getIt<AuthCubit>();
+      final authState = authCubit.state;
+      
+      final isAuthenticated = authState.runtimeType.toString() == 'AuthAuthenticated';
+      final isLoading = authState.runtimeType.toString() == 'AuthLoading';
+      
       final isSplash = state.matchedLocation == '/splash';
-      final isAuthRoute =
-          state.matchedLocation == '/login' ||
-          state.matchedLocation == '/signup';
+      final isAuthRoute = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
 
       // Show splash while loading auth state
       if (isLoading && !isSplash) {
@@ -56,7 +56,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // No redirect needed
       return null;
     },
-
     routes: [
       // === SPLASH ROUTE ===
       GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
@@ -83,9 +82,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) {
                       final coin = state.extra as Coin;
                       return NoTransitionPage(
-                    key: state.pageKey,
-                     child: CoinDetailPage(coin: coin),
-                    );
+                        key: state.pageKey,
+                        child: CoinDetailPage(coin: coin),
+                      );
                     },
                   ),
                 ],
@@ -106,4 +105,4 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
-});
+}

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:routepractice/core/theme/app_palete.dart';
-import 'package:routepractice/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:routepractice/features/auth/presentation/widgets/auth_field.dart';
 import 'package:routepractice/features/auth/presentation/widgets/auth_gradient_btn.dart';
 
@@ -46,14 +46,14 @@ String _getUserFriendlyErrorMessage(String error) {
   return 'Something went wrong. Please try again or contact support if the problem persists.';
 }
 
-class LoginPage extends ConsumerStatefulWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  ConsumerState<LoginPage> createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -66,7 +66,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authViewModelProvider);
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        return _buildLoginUI(context, authState);
+      },
+    );
+  }
+
+  Widget _buildLoginUI(BuildContext context, AuthState authState) {
 
     return Scaffold(
       body: Padding(
@@ -81,39 +88,39 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             const SizedBox(height: 30),
 
             // Show error message if any
-            if (authState.hasError)
-              Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: AppPalette.error.withValues(alpha: 0.1),
-                  border: Border.all(
-                    color: AppPalette.error.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: AppPalette.error,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _getUserFriendlyErrorMessage(authState.error.toString()),
-                        style: TextStyle(
-                          color: AppPalette.error,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+             if (authState is AuthError)
+               Container(
+                 padding: const EdgeInsets.all(16),
+                 margin: const EdgeInsets.only(bottom: 16),
+                 decoration: BoxDecoration(
+                   color: AppPalette.error.withValues(alpha: 0.1),
+                   border: Border.all(
+                     color: AppPalette.error.withValues(alpha: 0.3),
+                     width: 1,
+                   ),
+                   borderRadius: BorderRadius.circular(12),
+                 ),
+                 child: Row(
+                   children: [
+                     Icon(
+                       Icons.error_outline,
+                       color: AppPalette.error,
+                       size: 24,
+                     ),
+                     const SizedBox(width: 12),
+                     Expanded(
+                       child: Text(
+                         _getUserFriendlyErrorMessage(authState.message),
+                         style: TextStyle(
+                           color: AppPalette.error,
+                           fontSize: 14,
+                           fontWeight: FontWeight.w500,
+                         ),
+                       ),
+                     ),
+                   ],
+                 ),
+               ),
 
             AuthField(hintText: 'Email', controller: emailController),
             const SizedBox(height: 15),
@@ -143,5 +150,5 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ),
       ),
     );
-  }
+      }
 }

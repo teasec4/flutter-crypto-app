@@ -1,28 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:routepractice/features/auth/presentation/viewmodels/auth_view_model.dart';
+import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
 
-class AuthGate extends ConsumerWidget {
+class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authViewModelProvider);
-
-    return authState.when(
-      data: (user) {
-        // если пользователь залогинен → сразу ведём на /coins
-        if (user != null) {
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        if (authState is AuthAuthenticated) {
+          // если пользователь залогинен → сразу ведём на /coins
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/coins');
           });
-        } 
-        // если нет → на /login
-        else {
+        } else if (authState is AuthUnauthenticated) {
+          // если нет → на /login
           WidgetsBinding.instance.addPostFrameCallback((_) {
             context.go('/login');
           });
+        }
+
+        // Обработка ошибок
+        if (authState is AuthError) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Authentication Error',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    authState.message,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<AuthCubit>().checkAuthState();
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          );
         }
 
         // пока переход — просто крутилка
@@ -30,28 +56,6 @@ class AuthGate extends ConsumerWidget {
           body: Center(child: CircularProgressIndicator()),
         );
       },
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Authentication Error', style: TextStyle(color: Colors.red)),
-              const SizedBox(height: 8),
-              Text(error.toString(), textAlign: TextAlign.center),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref
-                    .read(authViewModelProvider.notifier)
-                    .checkAuthState(),
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

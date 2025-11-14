@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/coin.dart';
 
-class CoinTile extends ConsumerWidget {
+class CoinTile extends StatelessWidget {
   final Coin coin;
   const CoinTile({super.key, required this.coin});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return ListTile(
       onTap: () => context.push('/coins/details/${coin.id}', extra: coin),
       dense: true,
@@ -30,7 +29,7 @@ class CoinTile extends ConsumerWidget {
             coin.imageUrl,
             width: 20,
             height: 20,
-            errorBuilder: (_, __, ___) => const Icon(Icons.error, size: 20),
+            errorBuilder: (_, _, _) => const Icon(Icons.error, size: 20),
           ),
         ],
       ),

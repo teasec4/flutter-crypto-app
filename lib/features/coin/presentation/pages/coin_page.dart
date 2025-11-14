@@ -1,69 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:routepractice/core/theme/app_palete.dart';
-import 'package:routepractice/features/coin/presentation/coin_view_model.dart';
-import 'package:routepractice/features/coin/presentation/widgets/coin_tile.dart';
+import 'package:routepractice/features/coin/presentation/bloc/coin_bloc.dart';
+import 'package:routepractice/features/coin/presentation/widgets/coin_list_widget.dart';
 import 'package:routepractice/features/coin/presentation/widgets/empty_view.dart';
 import 'package:routepractice/features/coin/presentation/widgets/error_view.dart';
+import 'package:routepractice/features/coin/presentation/widgets/scroll_pagination_listener.dart';
 import 'package:routepractice/features/globalmarket/presentation/global_market_header.dart';
 
-class CoinPage extends ConsumerStatefulWidget {
+class CoinPage extends StatefulWidget {
   const CoinPage({super.key});
 
   @override
-  ConsumerState<CoinPage> createState() => _CoinPageState();
+  State<CoinPage> createState() => _CoinPageState();
 }
 
-class _CoinPageState extends ConsumerState<CoinPage> {
-  final scrollController = ScrollController();
+class _CoinPageState extends State<CoinPage> {
+  late ScrollController _scrollController;
+  late ScrollPaginationListener _paginationListener;
 
   @override
   void initState() {
     super.initState();
+    _initializeScrollListener();
+    context.read<CoinBloc>().add(const CoinInitialLoad());
+  }
 
-    scrollController.addListener(() {
-      final notifier = ref.read(coinNotifierProvider.notifier);
+  void _initializeScrollListener() {
+    _scrollController = ScrollController();
+    _paginationListener = CoinScrollPaginationListener(
+      onLoadMore: () {
+        context.read<CoinBloc>().add(const CoinLoadMore());
+      },
+      isLoadingMore: () {
+        final state = context.read<CoinBloc>().state;
+        return state is CoinLoaded && state.isLoadingMore;
+      },
+      threshold: 200,
+    );
 
-      if (scrollController.position.pixels >=
-          scrollController.position.maxScrollExtent - 200 &&
-          !notifier.isLoadingMore) {
-        notifier.loadMore();
-      }
+    _scrollController.addListener(() {
+      _paginationListener.onScroll(_scrollController.position);
     });
   }
 
   @override
   void dispose() {
-    scrollController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('🔥 build() called');
-    final coinsAsync = ref.watch(coinNotifierProvider);
-    final notifier = ref.read(coinNotifierProvider.notifier);
-
-    ref.listen(coinNotifierProvider, (prev, next) {
-      next.whenOrNull(
-        error: (err, _) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('⚠️ $err'),
-              backgroundColor: AppPalette.accent,
-            ),
+    return BlocBuilder<CoinBloc, CoinState>(
+      builder: (context, state) {
+        if (state is CoinLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppPalette.accent),
           );
-        },
-      );
-    });
+        }
 
-    return  coinsAsync.when(
-        data: (coins) {
-          // empty list
-          if (coins.isEmpty) {
-            return EmptyView();
+        if (state is CoinError) {
+          return ErrorView(
+            error: state.message,
+            onRetry: () {
+              context.read<CoinBloc>().add(const CoinRefresh());
+            },
+          );
+        }
+
+        if (state is CoinLoaded) {
+          // Empty state
+          if (state.coins.isEmpty) {
+            return const EmptyView();
           }
-          // data
+
+          // Data state with coin list
           return SafeArea(
             top: true,
             bottom: false,
@@ -71,46 +83,29 @@ class _CoinPageState extends ConsumerState<CoinPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 GlobalMarketHeader(),
-                const Divider(color: AppPalette.accent, height: 1, indent: 15, endIndent: 15,),
+                const Divider(
+                  color: AppPalette.accent,
+                  height: 1,
+                  indent: 15,
+                  endIndent: 15,
+                ),
                 Expanded(
-                  child: RefreshIndicator(
-                    color: AppPalette.accent,
-                    backgroundColor: AppPalette.background,
-                    onRefresh: () => notifier.refresh(),
-                    child: ListView.builder(
-                      controller: scrollController,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: coins.length + 1,
-                      itemBuilder: (context, i) {
-                        if (i == coins.length) {
-                          return notifier.isLoadingMore
-                              ? const Padding(
-                                  padding: EdgeInsets.all(20),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: AppPalette.accent,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox.shrink();
-                        }
-                        return CoinTile(coin: coins[i]);
-                      },
-                    ),
+                  child: CoinListWidget(
+                    coins: state.coins,
+                    isLoadingMore: state.isLoadingMore,
+                    scrollController: _scrollController,
+                    onRefresh: () async {
+                      context.read<CoinBloc>().add(const CoinRefresh());
+                    },
                   ),
                 ),
               ],
             ),
           );
-        },
-        error: (err, _) => ErrorView(
-          error: err.toString(),
-          onRetry: () async => await notifier.refresh(),
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppPalette.accent),
-        ),
-      );
+        }
 
+        return const SizedBox.shrink();
+      },
+    );
   }
 }

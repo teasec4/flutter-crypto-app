@@ -5,7 +5,7 @@ A modern **cryptocurrency** and **NFT tracking** application built with Flutter,
 ![Flutter](https://img.shields.io/badge/Flutter-3.9+-blue.svg)
 ![Dart](https://img.shields.io/badge/Dart-3.9.2+-teal.svg)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean-brightgreen.svg)
-![State Management](https://img.shields.io/badge/State%20Management-Riverpod%202.6.1-orange.svg)
+![State Management](https://img.shields.io/badge/State%20Management-BLoC%2FCubit-orange.svg)
 
 ---
 
@@ -36,24 +36,32 @@ This project follows **Clean Architecture** principles with clear separation of 
 ```
 lib/
 ├── core/                          # Shared utilities and base classes
-│   ├── constants/                 # App-wide constants
-│   ├── errors/                    # Error handling
-│   ├── network/                   # HTTP client configuration
+│   ├── di/                        # Dependency injection (GetIt)
+│   ├── routing/                   # Navigation configuration (GoRouter)
 │   ├── theme/                     # App theming
-│   └── utils/                     # Helper functions
+│   ├── widgets/                   # Shared widgets
+│   ├── logger/                    # Logging utilities
+│   ├── utils/                     # Helper functions & retry strategies
+│   └── exceptions/                # Custom exceptions
 ├── features/                      # Feature modules
 │   ├── coin/                      # Cryptocurrency feature
 │   │   ├── data/                  # Data layer
-│   │   │   ├── coin_service.dart  # API service
-│   │   │   ├── models/            # Data models
-│   │   │   └── coin_repository_impl.dart
+│   │   │   ├── coin_repository_impl.dart  # Repository implementation
+│   │   │   ├── coin_mapper.dart   # Data mapping
+│   │   │   └── coin_service.dart  # API service (legacy)
 │   │   ├── domain/                # Business logic layer
-│   │   │   ├── entities/          # Domain entities
-│   │   │   └── coin_repository.dart
+│   │   │   ├── coin.dart          # Domain entity
+│   │   │   └── coin_repository.dart # Repository interface
 │   │   └── presentation/          # UI layer
 │   │       ├── pages/             # Screens
-│   │       ├── widgets/           # Reusable widgets
-│   │       └── providers/         # Riverpod providers
+│   │       ├── bloc/              # BLoC for state management
+│   │       └── widgets/           # Feature-specific widgets
+│   ├── auth/                      # Authentication feature
+│   │   ├── data/                  # Auth service & data layer
+│   │   ├── domain/                # User model
+│   │   └── presentation/          # Login/Signup pages & Cubit
+│   ├── profile/                   # User profile feature
+│   └── globalmarket/              # Global market data feature
 ```
 
 ---
@@ -84,21 +92,22 @@ lib/
 - Flutter SDK: `3.9+`
 - Dart: `3.9.2+`
 - Architecture: Clean Architecture
-- State Management: Riverpod 2.6.1
+- State Management: BLoC / Cubit (flutter_bloc)
+- DI Container: GetIt
+- Navigation: GoRouter
 
 **Key Dependencies**
 
 | Package | Purpose |
 |----------|----------|
-| `riverpod` / `flutter_riverpod` | State management & dependency injection |
+| `flutter_bloc` | State management (BLoC/Cubit pattern) |
+| `get_it` | Service locator & dependency injection |
 | `go_router` | Declarative routing & navigation |
-| `dio` | HTTP client for API requests |
 | `fpdart` | Functional programming (Either for error handling) |
 | `supabase_flutter` | Backend-as-a-Service (Auth + Database) |
+| `http` | HTTP client for API requests |
+| `equatable` | Value equality for BLoC states |
 | `shared_preferences` | Local data persistence |
-| `cached_network_image` | Image caching and loading |
-| `flutter_svg` | SVG rendering |
-| `intl` | Internationalization and formatting |
 
 ---
 
@@ -192,47 +201,77 @@ flutter build ios --release
 
 ## 🎯 Project Structure Highlights
 
-### 🌀 State Management with Riverpod
+### 🧩 Dependency Injection with GetIt
 ```dart
-final coinRepositoryProvider = Provider<CoinRepository>((ref) {
-  return CoinRepositoryImpl(CoinService());
-});
-
-final coinListProvider = StateNotifierProvider<CoinListNotifier, AsyncValue<List<Coin>>>((ref) {
-  return CoinListNotifier(ref.read(coinRepositoryProvider));
-});
+void setupServiceLocator() {
+  // Register repositories
+  getIt.registerSingleton<CoinRepository>(CoinRepositoryImpl());
+  
+  // Register BLoCs/Cubits
+  getIt.registerSingleton<CoinBloc>(
+    CoinBloc(getIt<CoinRepository>(), getIt<RetryStrategy>()),
+  );
+}
 ```
 
 ---
 
-### 🧠 Functional Error Handling
+### 🌀 State Management with BLoC
 ```dart
-Future<Either<Failure, List<Coin>>> getCoins() async {
-  try {
-    final coins = await _service.fetchCoins();
-    return Right(coins);
-  } catch (e) {
-    return Left(ServerFailure(e.toString()));
+class CoinBloc extends Bloc<CoinEvent, CoinState> {
+  CoinBloc(this._repo, this._retryStrategy) : super(const CoinInitial()) {
+    on<CoinInitialLoad>(_onInitialLoad);
+    on<CoinLoadMore>(_onLoadMore);
+  }
+  
+  Future<void> _onInitialLoad(CoinInitialLoad event, Emitter<CoinState> emit) async {
+    emit(const CoinLoading());
+    try {
+      final coins = await _repo.getCoins(page: 1, perPage: 30);
+      emit(CoinLoaded(coins: coins));
+    } catch (e) {
+      emit(CoinError(e.toString()));
+    }
   }
 }
 ```
 
 ---
 
-### 🗺️ Navigation with Go Router
+### 🧠 Authentication with Cubit
 ```dart
-final router = GoRouter(
+class AuthCubit extends Cubit<AuthState> {
+  AuthCubit(this._service) : super(const AuthInitial());
+  
+  Future<void> signIn({required String email, required String password}) async {
+    emit(const AuthLoading());
+    final result = await _service.signIn(email: email, password: password);
+    result.match(
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(AuthAuthenticated(user)),
+    );
+  }
+}
+```
+
+---
+
+### 🗺️ Type-Safe Navigation with Go Router
+```dart
+GoRouter(
   redirect: (context, state) {
-    // Auth guard logic
+    final authState = getIt<AuthCubit>().state;
+    final isAuthenticated = authState is AuthAuthenticated;
+    // Smart redirects based on auth state
   },
   routes: [
-    StatefulShellRoute(
-      builder: (context, state, navigationShell) {
-        return ScaffoldWithNavBar(navigationShell: navigationShell);
+    GoRoute(path: '/coins', builder: (context, state) => const CoinPage()),
+    GoRoute(
+      path: '/coins/details/:id',
+      builder: (context, state) {
+        final coin = state.extra as Coin;
+        return CoinDetailPage(coin: coin);
       },
-      branches: [
-        // Coins, NFTs, Favorites, Profile tabs
-      ],
     ),
   ],
 );
@@ -243,15 +282,15 @@ final router = GoRouter(
 ## 📚 What You Can Learn
 
 ✅ Clean Architecture – Proper separation of concerns  
-✅ Riverpod – Modern state management & DI  
-✅ Go Router – Declarative navigation  
-✅ Functional Programming – Robust error handling  
-✅ API Integration – REST APIs  
-✅ Supabase – Authentication & backend  
-✅ Repository Pattern – Data abstraction  
-✅ Dependency Injection – Testable code  
-✅ Responsive UI – Adaptive layouts  
-✅ Local Storage – Favorites persistence
+✅ BLoC/Cubit Pattern – Scalable state management  
+✅ GetIt – Service locator for dependency injection  
+✅ Go Router – Type-safe declarative navigation  
+✅ Repository Pattern – Clean data abstraction layer  
+✅ Functional Programming – Either type for error handling  
+✅ Supabase Integration – Firebase alternative for Auth & Database  
+✅ API Integration – REST API consumption with proper error handling  
+✅ Retry Strategy – Exponential backoff for resilient requests  
+✅ Authentication Guards – Route protection based on auth state
 
 ---
 

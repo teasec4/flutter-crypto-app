@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:routepractice/core/exceptions/app_exception.dart';
 import 'package:routepractice/features/coin/data/coin_mapper.dart';
 import 'package:routepractice/features/coin/domain/coin.dart';
-import 'package:http/http.dart' as http;
 import 'package:routepractice/features/coin/domain/coin_repository.dart';
-import 'package:routepractice/core/exceptions/app_exception.dart';
 
-class CoinService implements CoinRepository {
+/// Implementation of CoinRepository using HTTP client
+class CoinRepositoryImpl implements CoinRepository {
   static const String _baseUrl = 'https://api.coingecko.com/api/v3';
   static const Duration _timeout = Duration(seconds: 10);
+
+  final http.Client _httpClient;
+
+  CoinRepositoryImpl({http.Client? httpClient}) : _httpClient = httpClient ?? http.Client();
 
   @override
   Future<List<Coin>> getCoins({int page = 1, int perPage = 50}) async {
@@ -19,7 +24,7 @@ class CoinService implements CoinRepository {
         '&per_page=$perPage&page=$page&sparkline=false',
       );
 
-      final response = await http.get(url).timeout(_timeout);
+      final response = await _httpClient.get(url).timeout(_timeout);
 
       if (response.statusCode != 200) {
         throw Exception('Failed to fetch coins list');
@@ -35,7 +40,7 @@ class CoinService implements CoinRepository {
     return _executeRequest(() async {
       final url = Uri.parse('$_baseUrl/coins/$id');
 
-      final response = await http.get(url).timeout(_timeout);
+      final response = await _httpClient.get(url).timeout(_timeout);
 
       if (response.statusCode != 200) {
         throw Exception('Failed to fetch coin data');

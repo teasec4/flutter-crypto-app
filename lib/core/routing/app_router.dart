@@ -27,8 +27,8 @@ void initializeRouter() {
       final authCubit = getIt<AuthCubit>();
       final authState = authCubit.state;
       
-      final isAuthenticated = authState.runtimeType.toString() == 'AuthAuthenticated';
-      final isLoading = authState.runtimeType.toString() == 'AuthLoading';
+      final isAuthenticated = authState is AuthAuthenticated;
+      final isLoading = authState is AuthLoading;
       
       final isSplash = state.matchedLocation == '/splash';
       final isAuthRoute = state.matchedLocation == '/login' || state.matchedLocation == '/signup';

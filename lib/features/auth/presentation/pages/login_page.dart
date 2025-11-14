@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:routepractice/core/theme/app_palete.dart';
-import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:routepractice/core/theme/app_palette.dart';
+import 'package:routepractice/features/auth/presentation/auth_cubit.dart';
 import 'package:routepractice/features/auth/presentation/widgets/auth_field.dart';
 import 'package:routepractice/features/auth/presentation/widgets/auth_gradient_btn.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:routepractice/core/theme/app_palete.dart';
+import 'package:routepractice/core/theme/app_palette.dart';
 import 'package:routepractice/features/auth/domain/user_model.dart';
 
 class ProfileHeader extends StatelessWidget {

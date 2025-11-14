@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:routepractice/features/auth/presentation/auth_cubit.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:routepractice/core/theme/app_palete.dart';
-import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:routepractice/core/theme/app_palette.dart';
+import 'package:routepractice/features/auth/presentation/auth_cubit.dart';
 
 /// Simple auth button that calls auth methods
 /// Navigation is handled by GoRouter redirects

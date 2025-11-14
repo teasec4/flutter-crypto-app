@@ -4,9 +4,9 @@ import 'package:routepractice/core/di/service_locator.dart';
 import 'package:routepractice/core/routing/app_router.dart';
 import 'package:routepractice/core/secrets/app_secrets.dart';
 import 'package:routepractice/core/theme/theme.dart';
-import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:routepractice/features/coin/presentation/bloc/coin_bloc.dart';
-import 'package:routepractice/features/globalmarket/presentation/global_market_bloc.dart';
+import 'package:routepractice/features/auth/presentation/auth_cubit.dart';
+import 'package:routepractice/features/coin/presentation/coin_bloc.dart';
+import 'package:routepractice/features/globalmarket/presentation/bloc/global_market_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {

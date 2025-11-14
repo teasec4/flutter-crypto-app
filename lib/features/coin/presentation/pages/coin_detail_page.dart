@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:routepractice/core/theme/app_palete.dart';
+import 'package:routepractice/core/theme/app_palette.dart';
 import '../../domain/coin.dart';
 
 class CoinDetailPage extends StatelessWidget {

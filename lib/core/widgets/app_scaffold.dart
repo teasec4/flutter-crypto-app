@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:routepractice/core/interfaces/detail_pageable.dart';
-import 'package:routepractice/core/theme/app_palete.dart';
+import 'package:routepractice/core/theme/app_palette.dart';
 import 'package:routepractice/core/widgets/custom_nav_bar.dart';
 
 class AppScaffold extends StatelessWidget {

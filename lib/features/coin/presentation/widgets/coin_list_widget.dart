@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:routepractice/core/theme/app_palete.dart';
+import 'package:routepractice/core/theme/app_palette.dart';
 import 'package:routepractice/features/coin/domain/coin.dart';
 import 'package:routepractice/features/coin/presentation/widgets/coin_tile.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:routepractice/features/globalmarket/presentation/global_market_bloc.dart';
+import 'package:routepractice/features/globalmarket/presentation/bloc/global_market_bloc.dart';
 
 class GlobalMarketHeader extends StatefulWidget {
   const GlobalMarketHeader({super.key});

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:routepractice/core/theme/app_palete.dart';
-import 'package:routepractice/features/coin/presentation/bloc/coin_bloc.dart';
+import 'package:routepractice/core/theme/app_palette.dart';
+import 'package:routepractice/features/coin/presentation/coin_bloc.dart';
 import 'package:routepractice/features/coin/presentation/widgets/coin_list_widget.dart';
 import 'package:routepractice/features/coin/presentation/widgets/empty_view.dart';
 import 'package:routepractice/features/coin/presentation/widgets/error_view.dart';
 import 'package:routepractice/features/coin/presentation/widgets/scroll_pagination_listener.dart';
-import 'package:routepractice/features/globalmarket/presentation/global_market_header.dart';
+import 'package:routepractice/features/globalmarket/presentation/widgets/global_market_header.dart';
 
 class CoinPage extends StatefulWidget {
   const CoinPage({super.key});

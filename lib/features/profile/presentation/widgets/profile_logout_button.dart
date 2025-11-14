@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:routepractice/core/theme/app_palete.dart';
+import 'package:routepractice/core/theme/app_palette.dart';
 
 class ProfileLogoutButton extends StatelessWidget {
   final VoidCallback onPressed;

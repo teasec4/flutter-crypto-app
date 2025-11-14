@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:routepractice/core/di/service_locator.dart';
 import 'package:routepractice/core/widgets/app_scaffold.dart';
-import 'package:routepractice/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:routepractice/features/auth/presentation/auth_cubit.dart';
 import 'package:routepractice/features/auth/presentation/pages/login_page.dart';
 import 'package:routepractice/features/auth/presentation/pages/signup_page.dart';
 import 'package:routepractice/features/auth/presentation/pages/splash_page.dart';

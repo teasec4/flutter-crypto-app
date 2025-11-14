@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routepractice/core/theme/app_palete.dart';
-import 'package:routepractice/features/favorites/domain/favorite_item.dart';
-import 'package:routepractice/features/favorites/presentation/favorites_view_model.dart';
 import '../../domain/coin.dart';
 
 class CoinDetailPage extends ConsumerWidget {
@@ -11,8 +9,6 @@ class CoinDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isFavorite = ref.watch(isFavoriteProvider((id: coin.id, type: FavoriteType.coin)));
-
     return SafeArea(
       child: Column(
         children: [

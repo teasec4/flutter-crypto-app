@@ -8,10 +8,7 @@ import 'package:routepractice/features/auth/presentation/pages/splash_page.dart'
 import 'package:routepractice/features/coin/domain/coin.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_detail_page.dart';
 import 'package:routepractice/features/coin/presentation/pages/coin_page.dart';
-import 'package:routepractice/features/favorites/presentation/pages/favorites_page.dart';
-import 'package:routepractice/features/nft/domain/nft.dart';
-import 'package:routepractice/features/nft/presentation/pages/nft_detail_page.dart';
-import 'package:routepractice/features/nft/presentation/pages/nft_page.dart';
+
 import 'package:routepractice/features/profile/presentation/pages/profile_page.dart';
 import 'package:routepractice/go_router_notifier.dart';
 
@@ -92,39 +89,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                 ],
-              ),
-            ],
-          ),
-
-          // === NFTS BRANCH ===
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/nfts',
-                builder: (context, state) => const NFTPage(),
-                routes: [
-                  GoRoute(
-                    path: 'details/:id',
-                    pageBuilder: (context, state) {
-                    final nftId = state.pathParameters['id']!;
-                    final nft = state.extra as NFT?;
-                    return NoTransitionPage(
-                    key: state.pageKey,
-                    child: NFTDetailPage(nftId: nftId, nft: nft),
-                    );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          // === FAVORITES BRANCH ===
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/favorites',
-                builder: (context, state) => const FavoritesPage(),
               ),
             ],
           ),

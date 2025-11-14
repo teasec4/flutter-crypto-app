@@ -29,11 +29,9 @@ class CustomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(Icons.currency_bitcoin, "Coins", 0, context),
-          _buildNavItem(Icons.collections, "NFT", 1, context),
-          _buildNavItem(Icons.favorite_border, "Favorites", 2, context),
-          _buildNavItem(Icons.person_outline, "Profile", 3, context),
-        ],
+           _buildNavItem(Icons.currency_bitcoin, "Coins", 0, context),
+           _buildNavItem(Icons.person_outline, "Profile", 1, context),
+         ],
       ),
     );
   }

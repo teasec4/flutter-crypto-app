@@ -35,7 +35,9 @@ void setupServiceLocator() {
   );
 
   // Coin
-  getIt.registerSingleton<CoinRepository>(CoinRepositoryImpl());
+  getIt.registerSingleton<CoinRepository>(
+    CoinRepositoryImpl(retryStrategy: getIt<RetryStrategy>()),
+  );
   getIt.registerSingleton<CoinBloc>(
     CoinBloc(getIt<CoinRepository>(), getIt<RetryStrategy>()),
   );
